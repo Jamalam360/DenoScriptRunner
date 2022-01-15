@@ -9,8 +9,10 @@ interface Script {
   path: string;
   commands: string[][];
   git: boolean;
-  await: boolean;
 }
+
+// deno-lint-ignore no-explicit-any
+const commands: Promise<any>[] = [];
 
 try {
   const scripts = JSON.parse(await Deno.readTextFile(Deno.args[0])) as Script[];
@@ -46,12 +48,12 @@ try {
         stderr: "inherit",
       });
 
-      if (script.await) {
-        await cmd.status();
-      }
+      commands.push(cmd.status());
     }
   }
 } catch (e) {
   console.log("Failed to run startup scripts");
   throw e;
 }
+
+await Promise.all(commands);
