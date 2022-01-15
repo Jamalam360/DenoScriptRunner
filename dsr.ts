@@ -15,8 +15,10 @@ try {
 
   for (let index = 0; index < scripts.length; index++) {
     const script = scripts[index];
+    console.log("Starting command: " + script.name);
 
     if (script.git) {
+      console.log("Running git pull...");
       const cmd = Deno.run({
         cwd: script.path,
         cmd: [
@@ -24,15 +26,16 @@ try {
           "pull",
         ],
         stdout: "null",
-        stderr: "null"
+        stderr: "null",
       });
 
       await cmd.status();
     }
 
     for (let index = 0; index < script.commands.length; index++) {
-      console.log("Starting command: " + script.name);
-
+      console.log(
+        `Running command ${(index + 1)} of ${script.commands.length}`,
+      );
       const cmd = Deno.run({
         cwd: script.path,
         cmd: script.commands[index],
