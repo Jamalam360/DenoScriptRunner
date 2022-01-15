@@ -3,9 +3,11 @@ interface Command {
 }
 
 interface Script {
+  name: string;
   path: string;
   commands: string[][];
   git: boolean;
+  await: boolean;
 }
 
 try {
@@ -15,7 +17,7 @@ try {
     const script = scripts[index];
 
     if (script.git) {
-      await Deno.run({
+      const cmd = Deno.run({
         cwd: script.path,
         cmd: [
           "git",
@@ -24,9 +26,13 @@ try {
         stdout: "null",
         stderr: "null"
       });
+
+      await cmd.status();
     }
 
     for (let index = 0; index < script.commands.length; index++) {
+      console.log("Starting command: " + script.name);
+
       const cmd = Deno.run({
         cwd: script.path,
         cmd: script.commands[index],
@@ -34,7 +40,9 @@ try {
         stderr: "inherit",
       });
 
-      await cmd.status();
+      if (script.await) {
+        await cmd.status();
+      }
     }
   }
 } catch (e) {
