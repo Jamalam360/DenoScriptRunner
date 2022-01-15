@@ -1,3 +1,5 @@
+console.log("Welcome to DSR");
+
 interface Command {
   commands: string[];
 }
@@ -12,6 +14,7 @@ interface Script {
 
 try {
   const scripts = JSON.parse(await Deno.readTextFile(Deno.args[0])) as Script[];
+  console.log(`Found ${scripts.length} scripts`);
 
   for (let index = 0; index < scripts.length; index++) {
     const script = scripts[index];
